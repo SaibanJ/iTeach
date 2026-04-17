@@ -18,15 +18,20 @@ const Navbar = () => (
 
     <div className="flex items-center gap-2">
       <NavItems />
-      <div className="w-px h-4 mx-2" style={{ background: 'rgba(255,255,255,0.1)' }} />
-      <SignedOut>
-        <SignInButton>
-          <button className="btn-signin">Sign In</button>
-        </SignInButton>
-      </SignedOut>
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
+      <div
+        className="hidden sm:block w-px h-4 mx-2"
+        style={{ background: 'rgba(255,255,255,0.1)' }}
+      />
+      <div className="hidden sm:flex items-center gap-2">
+        <SignedOut>
+          <SignInButton>
+            <button className="btn-signin">Sign In</button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </div>
     </div>
   </nav>
 );
