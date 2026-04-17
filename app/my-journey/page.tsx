@@ -8,7 +8,6 @@ import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { getUserCompanions, getUserSessions } from '@/lib/actions/companion.actions';
 import Image from 'next/image';
-
 import CompanionsList from '@/components/CompanionsList';
 
 const Profile = async () => {
@@ -21,50 +20,116 @@ const Profile = async () => {
 
   return (
     <main className="min-lg:3/4">
-      <section className="flex justify-between gap-4 max-sm:flex-col items-center">
+      <section className="flex justify-between gap-6 max-sm:flex-col items-center">
         <div className="flex gap-4 items-center">
-          <Image src={user.imageUrl} alt={user.firstName!} width={110} height={110} />
-          <div className="flex flex-col gap-2">
-            <h1 className="font-bold text-2xl">
+          <Image
+            src={user.imageUrl}
+            alt={user.firstName!}
+            width={72}
+            height={72}
+            className="rounded-2xl"
+          />
+          <div className="flex flex-col gap-1">
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>
               {user.firstName} {user.lastName}
             </h1>
-            <p className="text-sm text-muted-foreground">{user.emailAddresses[0].emailAddress}</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              {user.emailAddresses[0].emailAddress}
+            </p>
           </div>
         </div>
-        <div className="flex gap-4">
-          <div className="border border-black rounded-lg p-3 gap-2 flex flex-col h-fit">
+
+        <div className="flex gap-3">
+          <div className="stat-card">
             <div className="flex gap-2 items-center">
-              <Image src="/icons/check.svg" alt="checkmark" width={22} height={22} />
-              <p className="text-2xl font-bold">{sessionHistory.length}</p>
+              <div
+                className="size-8 rounded-lg flex items-center justify-center"
+                style={{ background: 'rgba(139,92,246,0.15)' }}
+              >
+                <Image src="/icons/check.svg" alt="checkmark" width={16} height={16} />
+              </div>
+              <p className="text-2xl font-bold" style={{ color: 'var(--text)' }}>
+                {sessionHistory.length}
+              </p>
             </div>
-            <div>Lessons Completed</div>
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+              Lessons Completed
+            </p>
           </div>
-          <div className="border border-black rounded-lg p-3 gap-2 flex flex-col h-fit">
+          <div className="stat-card">
             <div className="flex gap-2 items-center">
-              <Image src="/icons/cap.svg" alt="cap" width={22} height={22} />
-              <p className="text-2xl font-bold">{companions.length}</p>
+              <div
+                className="size-8 rounded-lg flex items-center justify-center"
+                style={{ background: 'rgba(34,211,238,0.12)' }}
+              >
+                <Image src="/icons/cap.svg" alt="cap" width={16} height={16} />
+              </div>
+              <p className="text-2xl font-bold" style={{ color: 'var(--text)' }}>
+                {companions.length}
+              </p>
             </div>
-            <div>Companions Created</div>
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+              Companions Created
+            </p>
           </div>
         </div>
       </section>
-      <Accordion type="multiple">
-        <AccordionItem value="recent">
-          <AccordionTrigger className="text-2xl font-bold">Recent Sessions</AccordionTrigger>
-          <AccordionContent>
-            <CompanionsList title="Recent Sessions" companions={sessionHistory} />
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="companions">
-          <AccordionTrigger className="text-2xl font-bold">
-            My Companions {`${companions.length}`}
+
+      <Accordion type="multiple" className="flex flex-col gap-3">
+        <AccordionItem
+          value="recent"
+          className="rounded-2xl px-5"
+          style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+        >
+          <AccordionTrigger
+            className="text-base font-semibold hover:no-underline py-4"
+            style={{ color: 'var(--text)' }}
+          >
+            Recent Sessions
+            <span
+              className="ml-auto mr-2 text-xs font-normal"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              {sessionHistory.length}
+            </span>
           </AccordionTrigger>
           <AccordionContent>
-            <CompanionsList title="My Companions" companions={companions} />
+            <CompanionsList
+              title=""
+              companions={sessionHistory}
+              classNames="border-0 p-0 bg-transparent"
+            />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem
+          value="companions"
+          className="rounded-2xl px-5"
+          style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+        >
+          <AccordionTrigger
+            className="text-base font-semibold hover:no-underline py-4"
+            style={{ color: 'var(--text)' }}
+          >
+            My Companions
+            <span
+              className="ml-auto mr-2 text-xs font-normal"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              {companions.length}
+            </span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <CompanionsList
+              title=""
+              companions={companions}
+              classNames="border-0 p-0 bg-transparent"
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
     </main>
   );
 };
+
 export default Profile;

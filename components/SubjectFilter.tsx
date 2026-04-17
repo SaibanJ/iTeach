@@ -36,10 +36,19 @@ const SubjectFilter = () => {
 
   return (
     <Select onValueChange={setSubject} value={subject}>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Subject Filter" />
+      <SelectTrigger
+        className="w-[160px] text-sm rounded-lg"
+        style={{
+          background: 'var(--surface-2)',
+          border: '1px solid var(--border-bright)',
+          color: 'var(--text)',
+        }}
+      >
+        <SelectValue placeholder="All subjects" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent
+        style={{ background: 'var(--surface-2)', border: '1px solid var(--border-bright)' }}
+      >
         <SelectItem value="all">All subjects</SelectItem>
         {subjects.map(subject => (
           <SelectItem value={subject} key={subject} className="capitalize">

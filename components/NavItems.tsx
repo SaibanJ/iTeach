@@ -8,15 +8,16 @@ const navItems = [
   { label: 'Companions', href: '/companions' },
   { label: 'My Journey', href: '/my-journey' },
 ];
+
 const NavItems = () => {
   const pathname = usePathname();
   return (
-    <nav className="flex items-center gap-4">
+    <nav className="flex items-center gap-1">
       {navItems.map(({ label, href }) => (
         <Link
           href={href}
           key={label}
-          className={cn(pathname === href && 'text-primary font-semibold')}
+          className={cn('nav-link px-3 py-1.5 rounded-md', pathname === href && 'active')}
         >
           {label}
         </Link>

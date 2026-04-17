@@ -87,13 +87,11 @@ const CompanionComponent = ({
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
-
     const assistantOverrides = {
       variableValues: { subject, topic, style },
       clientMessages: ['transcript'],
       serverMessages: [],
     };
-
     //@ts-expect-error ddd
     await vapi.start(configureAssistant(voice, style), assistantOverrides);
   };
@@ -103,33 +101,38 @@ const CompanionComponent = ({
     vapi.stop();
   };
 
+  const isActive = callStatus === CallStatus.ACTIVE;
+  const isConnecting = callStatus === CallStatus.CONNECTING;
+  const color = getSubjectColor(subject);
+
   return (
-    <section className="flex flex-col h-[70vh]">
-      <section className="flex gap-8 max-sm:flex-col">
-        <div className="companion-section">
-          <div className="companion-avatar" style={{ backgroundColor: getSubjectColor(subject) }}>
+    <section className="flex flex-col h-[70vh] gap-4">
+      <section className="flex gap-4 max-sm:flex-col">
+        {/* Companion side */}
+        <div className={cn('companion-section transition-all duration-500', isActive && 'active')}>
+          <div
+            className="companion-avatar"
+            style={{ backgroundColor: color + '15', border: `1px solid ${color}30` }}
+          >
             <div
               className={cn(
-                'absolute transition-opacity duration-1000',
-                callStatus === CallStatus.FINISHED || callStatus === CallStatus.INACTIVE
-                  ? 'opacity-1001'
-                  : 'opacity-0',
-                callStatus === CallStatus.CONNECTING && 'opacity-100 animate-pulse'
+                'absolute transition-opacity duration-700',
+                isActive ? 'opacity-0' : 'opacity-100',
+                isConnecting && 'animate-pulse'
               )}
             >
               <Image
                 src={`/icons/${subject}.svg`}
                 alt={subject}
-                width={150}
-                height={150}
-                className="max-sm:w-fit"
+                width={120}
+                height={120}
+                className="max-sm:w-16"
               />
             </div>
-
             <div
               className={cn(
-                'absolute transition-opacity duration-1000',
-                callStatus === CallStatus.ACTIVE ? 'opacity-100' : 'opacity-0'
+                'absolute transition-opacity duration-700',
+                isActive ? 'opacity-100' : 'opacity-0'
               )}
             >
               <Lottie
@@ -140,14 +143,36 @@ const CompanionComponent = ({
               />
             </div>
           </div>
-          <p className="font-bold text-2xl">{name}</p>
+          <div className="flex flex-col items-center gap-1 pb-2">
+            <p className="font-bold text-lg" style={{ color: 'var(--text)' }}>
+              {name}
+            </p>
+            <p className="text-xs capitalize" style={{ color: 'var(--text-secondary)' }}>
+              {subject} tutor
+            </p>
+          </div>
+          {isActive && (
+            <div className="flex items-center gap-1.5 pb-4">
+              <span
+                className="size-2 rounded-full animate-pulse"
+                style={{ background: '#22c55e' }}
+              />
+              <span className="text-xs" style={{ color: '#22c55e' }}>
+                Live session
+              </span>
+            </div>
+          )}
         </div>
 
+        {/* User side */}
         <div className="user-section">
           <div className="user-avatar">
-            <Image src={userImage} alt={userName} width={130} height={130} className="rounded-lg" />
-            <p className="font-bold text-2xl">{userName}</p>
+            <Image src={userImage} alt={userName} width={80} height={80} className="rounded-xl" />
+            <p className="font-semibold text-base" style={{ color: 'var(--text)' }}>
+              {userName}
+            </p>
           </div>
+
           <button
             className="btn-mic"
             onClick={toggleMicrophone}
@@ -156,49 +181,64 @@ const CompanionComponent = ({
             <Image
               src={isMuted ? '/icons/mic-off.svg' : '/icons/mic-on.svg'}
               alt="mic"
-              width={36}
-              height={36}
+              width={24}
+              height={24}
             />
-            <p className="max-sm:hidden">
-              {isMuted ? 'Turn on microphone' : 'Turn off microphone'}
+            <p className="text-xs max-sm:hidden" style={{ color: 'var(--text-secondary)' }}>
+              {isMuted ? 'Unmute' : 'Mute'}
             </p>
           </button>
+
           <button
             className={cn(
-              'rounded-lg py-2 cursor-pointer transition-colors w-full text-white',
-              callStatus === CallStatus.ACTIVE ? 'bg-red-700' : 'bg-primary',
-              callStatus === CallStatus.CONNECTING && 'animate-pulse'
+              'rounded-xl py-3 cursor-pointer transition-all w-full text-white text-sm font-semibold',
+              isActive ? 'bg-red-600 hover:bg-red-700' : 'btn-primary justify-center',
+              isConnecting && 'animate-pulse opacity-80 cursor-wait'
             )}
-            onClick={callStatus === CallStatus.ACTIVE ? handleDisconnect : handleCall}
+            style={
+              !isActive
+                ? {
+                    background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+                    boxShadow: '0 0 20px rgba(139,92,246,0.3)',
+                  }
+                : undefined
+            }
+            onClick={isActive ? handleDisconnect : handleCall}
           >
-            {callStatus === CallStatus.ACTIVE
-              ? 'End Session'
-              : callStatus === CallStatus.CONNECTING
-                ? 'Connecting'
-                : 'Start Session'}
+            {isActive ? 'End Session' : isConnecting ? 'Connecting…' : 'Start Session'}
           </button>
         </div>
       </section>
 
+      {/* Transcript */}
       <section className="transcript">
         <div className="transcript-message no-scrollbar">
           {messages.map((message, index) => {
             if (message.role === 'assistant') {
               return (
-                <p key={index} className="max-sm:text-sm">
-                  {name.split(' ')[0].replace('/[.,]/g, ', '')}: {message.content}
+                <p key={index} className="text-sm leading-relaxed" style={{ color: 'var(--text)' }}>
+                  <span className="font-semibold" style={{ color: 'var(--primary)' }}>
+                    {name.split(' ')[0]}:
+                  </span>{' '}
+                  {message.content}
                 </p>
               );
             } else {
               return (
-                <p key={index} className="text-primary max-sm:text-sm">
-                  {userName}: {message.content}
+                <p
+                  key={index}
+                  className="text-sm leading-relaxed"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  <span className="font-semibold" style={{ color: 'var(--accent)' }}>
+                    {userName}:
+                  </span>{' '}
+                  {message.content}
                 </p>
               );
             }
           })}
         </div>
-
         <div className="transcript-fade" />
       </section>
     </section>

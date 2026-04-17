@@ -5,13 +5,22 @@ import { redirect } from 'next/navigation';
 const NewCompanion = async () => {
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
-  return (
-    <main className="min-lg:w-1/3 min-md:w-2/3 items-center justify-center">
-      <article className="w-full gap-4 flex flex-col">
-        <h1>Comapnion Builder</h1>
 
+  return (
+    <main className="max-w-[700px]! mx-auto! items-stretch!">
+      <div className="flex flex-col gap-2">
+        <h1 style={{ color: 'var(--text)' }}>Companion Builder</h1>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          Configure your AI tutor — name it, set the subject, and choose a voice style.
+        </p>
+      </div>
+
+      <div
+        className="rounded-2xl p-6"
+        style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+      >
         <CompanionForm />
-      </article>
+      </div>
     </main>
   );
 };
