@@ -75,8 +75,8 @@ const NavItems = () => {
       {/* Mobile drawer */}
       {open && (
         <div
-          className="sm:hidden fixed inset-0 top-[60px] z-40 flex flex-col"
-          style={{ background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(20px)' }}
+          className="sm:hidden fixed inset-0 top-[60px] z-[49] flex flex-col"
+          style={{ background: '#000000' }}
         >
           <nav className="flex flex-col p-6 gap-2">
             {navItems.map(({ label, href }) => (
